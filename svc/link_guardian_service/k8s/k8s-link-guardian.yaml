@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: link-guardian
+automountServiceAccountToken: false
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: link-guardian
+  labels:
+    svc: link
+    app: guardian
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      svc: link
+      app: guardian
+  template:
+    metadata:
+      labels:
+        svc: link
+        app: guardian
+    spec:
+      serviceAccount: link-guardian
+      containers:
+      - name: link-guardian
+        image: vivsoft-platform/vivsoft-link-guardian:0.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: link-guardian-config
+        volumeMounts:
+        - name: mutual-auth
+          mountPath: /etc/vivsoft-link-guardian
+          readOnly: true
+      volumes:
+      - name: mutual-auth
+        secret:
+          secretName: link-mutual-auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: link-guardian
+spec:
+  ports:
+  - port:  8080
+  selector:
+    svc: link
+    app: guardian

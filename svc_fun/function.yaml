@@ -1,0 +1,12 @@
+apiVersion: "nuclio.io/v1"
+kind: NuclioFunction
+metadata:
+  name: link-checker-function
+spec:
+  handler: main:Handler
+  runtime: golang
+  # minReplicas: 1
+  # maxReplicas: 3
+  # build:
+  #   commands:
+  #   - apk --update --no-cache add ca-certificates

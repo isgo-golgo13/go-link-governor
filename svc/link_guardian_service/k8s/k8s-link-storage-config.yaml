@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: link-storage-config
+  labels:
+    svc: link
+    app: postgres
+data:
+  POSTGRES_DB: link_manager
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres

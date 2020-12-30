@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: link-storage #link-db
+spec:
+  serviceName: "postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      svc: link
+      app: postgres
+  template:
+    metadata:
+      labels:
+        svc: link
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:latest
+        envFrom:
+          - configMapRef:
+              name: link-storage-config
+        ports:
+        - containerPort: 5432
+          name: postgredb
+        volumeMounts:
+        - name: postgredb
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres
+  volumeClaimTemplates:
+  - metadata:
+      name: postgredb
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: gp2
+      resources:
+        requests:
+          storage: 2Gi
